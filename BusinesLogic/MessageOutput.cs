@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿/*using Newtonsoft.Json.Linq;
 
 namespace LocateSatellites.BusinesLogic
 {
@@ -6,17 +6,13 @@ namespace LocateSatellites.BusinesLogic
     {
         public object GetRMessage()
         {
-            JObject objJson = new JObject
+            object objJson = new object
             {
-                ["position"] = new JObject
-                {
-                    ["x"] = -100,
-                    ["y"] = 75.5
-                },
-                ["message"] = "ESTE ES UN MENSAJE SECRETO"
+                string message = "ESTE ES UN MENSAJE SECRETO";
             };
 
             return objJson;
         }
     }
 }
+*/

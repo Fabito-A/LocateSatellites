@@ -34,18 +34,29 @@ namespace LocateSatellites.BusinesLogic
 
         public static double CalculateDistance(CoordinateDto point1, CoordinateDto point2)
         {
+            double result;
             // Cálculo de la distancia entre dos puntos en el espacio 3D
             double dx = point2.X - point1.X;
             double dy = point2.Y - point1.Y;
             double dz = point2.Z - point1.Z;
+            double value = Math.Sqrt(dx * dx + dy * dy + dz * dz);
 
-            return Math.Sqrt(dx * dx + dy * dy + dz * dz);
+            if (double.IsNaN(value))
+            {
+                result = 0;
+            }
+            else 
+            {
+                result = value;            
+            }
+
+            return result;
         }
 
         public static double TriangulateCoordinate(double distance1, double distance2, double distance3, double coordinate1, double coordinate2, double coordinate3)
         {
             // Triangulación de una coordenada en base a las distancias y coordenadas de los satélites
-
+            double result;
             // Se aplica el método de trilateración
             double A = 2 * (coordinate2 - coordinate1);
             double B = 2 * (coordinate2 - coordinate3);
@@ -54,7 +65,16 @@ namespace LocateSatellites.BusinesLogic
 
             double x = (C * B - D * A) / (B * B - A * A);
 
-            return x;
+            if (double.IsNaN(x))
+            {
+                result = 0;
+            }
+            else
+            {
+                result = x;
+            }
+
+            return result;
         }
     }
 }

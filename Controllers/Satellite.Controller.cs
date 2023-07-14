@@ -5,11 +5,13 @@ using Newtonsoft.Json;
 
 namespace LocateSatellites.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ApiController : ControllerBase
     {
         [HttpPost]
-        [Route("/api/sendCoord")]
-        public IActionResult GetCoordinate(List<CoordinateCtrlDto> coordinate)
+        [Route("/sendCoord")]
+        public IActionResult GetCoordinate(List<CoordinateDataDto> coordinate)
         {
             LogicaPrincipal calcsatellite =new LogicaPrincipal();  
             var response = calcsatellite.CalcSatellite(coordinate);
@@ -17,8 +19,8 @@ namespace LocateSatellites.Controllers
         }
 
         [HttpPost]
-        [Route("/api/getDistance")]
-        public IActionResult GetDistance(List<CoordinateCtrlDto> coordinate)
+        [Route("/getDistance")]
+        public IActionResult GetDistance(List<CoordinateDataDto> coordinate)
         {   
             LogicaPrincipal logicaPrincipal = new LogicaPrincipal();
             var response = logicaPrincipal.CalcDistance(coordinate);
@@ -26,10 +28,9 @@ namespace LocateSatellites.Controllers
         }
 
         [HttpPost]
-        [Route("/api/topsecret")]
+        [Route("/topsecret")]
         public IActionResult ProcesarArchivo(List<SatelliteDTO> satellites)
         {
-            var valor = satellites.ToList();
             LogicaPrincipal logicaPrincipal = new LogicaPrincipal();
             var response = logicaPrincipal.DecodeMessage(satellites);
 

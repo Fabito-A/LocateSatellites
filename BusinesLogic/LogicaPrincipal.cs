@@ -1,19 +1,18 @@
-﻿using LocateSatellites.Controllers;
-using LocateSatellites.Dtos;
+﻿using LocateSatellites.Dtos;
 using Newtonsoft.Json;
 namespace LocateSatellites.BusinesLogic
 {
     public class LogicaPrincipal
     {
-        Tuple<double, double, double> Kenobi = Tuple.Create(-500.0, -200.0, 10.0);
-        Tuple<double, double, double> Skywalker = Tuple.Create(100.0, -100.0, 10.0);
-        Tuple<double, double, double> Sato = Tuple.Create(500.0, 100.0, 10.0);
+        Tuple<double, double, double> Kenobi = Tuple.Create(-500.0, -200.0, 0.0);
+        Tuple<double, double, double> Skywalker = Tuple.Create(100.0, -100.0, 0.0);
+        Tuple<double, double, double> Sato = Tuple.Create(500.0, 100.0, 0.0);
 
 
         public List<string> GetMessage(double distance, double triangulate, string name)
         {
 
-            bool compare = MarginValue(distance, triangulate);
+            bool compare = MarginValue(triangulate);
 
             if (name == "Kenobi")
             {
@@ -52,15 +51,15 @@ namespace LocateSatellites.BusinesLogic
             return new List<string> { "not found" };
         }
 
-        public List<SatelliteDto> CalcSatellite(List<CoordinateCtrlDto> data)
+        public List<SatelliteDto> CalcSatellite(List<CoordinateDataDto> data)
         {
             CoordinateCtrlDto coord = new CoordinateCtrlDto();
 
-            foreach (CoordinateCtrlDto values in data)
+            foreach (CoordinateDataDto values in data)
             {
-                coord.x = values.x;
-                coord.y = values.y;
-                coord.z = values.z;
+                coord.x = values.coordinate[0].x;
+                coord.y = values.coordinate[0].y;
+                coord.z = values.coordinate[0].z;
             }
 
             List<SatelliteDto> satellites = new List<SatelliteDto>();
@@ -73,7 +72,7 @@ namespace LocateSatellites.BusinesLogic
             CoordinateDto position = SatelliteTriangulation.TriangulatePosition(kenobyReference, skywalwerReference, satoReference);
 
 
-            double kenobiDistance = SatelliteTriangulation.CalculateDistance(pointReference, kenobyReference);
+            double kenobiDistance =  SatelliteTriangulation.CalculateDistance(pointReference, kenobyReference);
             double skywalkerDistance = SatelliteTriangulation.CalculateDistance(pointReference, skywalwerReference);
             double satoDistance = SatelliteTriangulation.CalculateDistance(pointReference, satoReference);
             double triangulate = SatelliteTriangulation.CalculateDistance(pointReference, position);
@@ -88,28 +87,26 @@ namespace LocateSatellites.BusinesLogic
 
             if (position != null)
             {
-                double cordX = position.X;
-                double cordY = position.Y;
-                double cordZ = position.Z;
+
 
                 satellites.Add(new SatelliteDto
                 {
                     Name = "Kenobi",
-                    Position = Tuple.Create(Math.Round(cordX, 2), Math.Round(cordY, 2), Math.Round(cordZ, 2)),
+                    Distance = kenobiDistance,
                     Message = kenobiMessage
                 });
 
                 satellites.Add(new SatelliteDto
                 {
                     Name = "Skywalker",
-                    Position = Tuple.Create(Math.Round(cordX, 2), Math.Round(cordY, 2), Math.Round(cordZ, 2)),
+                    Distance = skywalkerDistance,
                     Message = skywalkerMessage
                 });
 
                 satellites.Add(new SatelliteDto
                 {
                     Name = "Sato",
-                    Position = Tuple.Create(Math.Round(cordX, 2), Math.Round(cordY, 2), Math.Round(cordZ, 2)),
+                    Distance = satoDistance,
                     Message = satoMessage
                 });
             }
@@ -117,15 +114,15 @@ namespace LocateSatellites.BusinesLogic
             return satellites;
         }
 
-        public List<SatelliteDto> CalcDistance(List<CoordinateCtrlDto> Data)
+        public List<SatelliteDto> CalcDistance(List<CoordinateDataDto> data)
         {
             CoordinateCtrlDto coord = new CoordinateCtrlDto();
 
-            foreach (CoordinateCtrlDto values in Data)
+            foreach (CoordinateDataDto values in data)
             {
-                coord.x = values.x;
-                coord.y = values.y;
-                coord.z = values.z;
+                coord.x = values.coordinate[0].x;
+                coord.y = values.coordinate[0].y;
+                coord.z = values.coordinate[0].z;
             }
 
 
@@ -183,12 +180,12 @@ namespace LocateSatellites.BusinesLogic
                 {
                     if (objeto.message != null)
                     {
-                        mensaje.AddRange(JsonConvert.DeserializeObject<List<string>>(objeto.message.ToString()));
+                        mensaje.AddRange(objeto.message.ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim()).Where(m => m != ""));
                     }
                 }
                 else
                 {
-                    mensaje.AddRange(JsonConvert.DeserializeObject<List<string>>(objeto.message.ToString()));
+                    mensaje.AddRange(objeto.message.Where(m => m != ""));
                 }
 
                 frase.AddRange(mensaje.Where(m => m != ""));
@@ -197,10 +194,9 @@ namespace LocateSatellites.BusinesLogic
 
             if (decode.ToHashSet().SetEquals(frase.ToHashSet()))
             {
-                MessageOutput messageOutput = new MessageOutput();
-                var message = messageOutput.GetRMessage();
+               // MessageOutput messageOutput = new MessageOutput();
 
-                return (List<string>)message;
+                return decode.ToList();
             }
             else
             {
@@ -208,13 +204,13 @@ namespace LocateSatellites.BusinesLogic
             }
         }
 
-        bool MarginValue(double valor1, double valor2)
+        bool MarginValue(double valor2)
         {
             double margenMinimo = -50;
             double margenMaximo = 50;
             bool result;
 
-            double resultado = valor1 - valor2;
+            double resultado = valor2;
 
             if (resultado >= margenMinimo && resultado <= margenMaximo)
             {

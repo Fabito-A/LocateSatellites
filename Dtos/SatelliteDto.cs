@@ -1,4 +1,4 @@
-﻿namespace LocateSatellites.Controllers
+﻿namespace LocateSatellites.Dtos
 {
     public class SatelliteDto
     {
