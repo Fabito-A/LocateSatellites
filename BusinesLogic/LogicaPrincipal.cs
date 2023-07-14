@@ -1,13 +1,18 @@
 ﻿using LocateSatellites.Dtos;
 using Newtonsoft.Json;
+using System.IO;
+
 namespace LocateSatellites.BusinesLogic
 {
     public class LogicaPrincipal
-    {
+    {/*
         Tuple<double, double, double> Kenobi = Tuple.Create(-500.0, -200.0, 0.0);
         Tuple<double, double, double> Skywalker = Tuple.Create(100.0, -100.0, 0.0);
         Tuple<double, double, double> Sato = Tuple.Create(500.0, 100.0, 0.0);
-
+        */
+        Tuple<double, double, double> Kenobi;
+        Tuple<double, double, double> Skywalker;
+        Tuple<double, double, double> Sato;
 
         public List<string> GetMessage(double distance, double triangulate, string name)
         {
@@ -61,6 +66,18 @@ namespace LocateSatellites.BusinesLogic
                 coord.y = values.coordinate[0].y;
                 coord.z = values.coordinate[0].z;
             }
+
+            //cambiar el directorio 
+            string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
+            leerDatos leerTxt = new leerDatos();    
+            List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
+
+            if (coordinates.Count >= 1)
+                Kenobi = coordinates[0];
+            if (coordinates.Count >= 2)
+                Skywalker = coordinates[1];
+            if (coordinates.Count >= 3)
+                Sato = coordinates[2];
 
             List<SatelliteDto> satellites = new List<SatelliteDto>();
             CoordinateDto pointReference = new CoordinateDto(coord.x, coord.y, coord.z);
@@ -125,6 +142,18 @@ namespace LocateSatellites.BusinesLogic
                 coord.z = values.coordinate[0].z;
             }
 
+            //cambiar el directorio 
+            string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
+
+            leerDatos leerTxt = new leerDatos();
+            List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
+
+            if (coordinates.Count >= 1)
+                Kenobi = coordinates[0];
+            if (coordinates.Count >= 2)
+                Skywalker = coordinates[1];
+            if (coordinates.Count >= 3)
+                Sato = coordinates[2];
 
             List<SatelliteDto> satellites = new List<SatelliteDto>();
             CoordinateDto pointReference = new CoordinateDto(coord.x, coord.y, coord.z);

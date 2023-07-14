@@ -3,20 +3,7 @@
 namespace LocateSatellites.BusinesLogic
 {
     public class SatelliteTriangulation
-    {/*
-        public static void Main()
-        {
-            // Coordenadas de los satélites
-            Coordinate satellite1 = new Coordinate(1, 2, 3);
-            Coordinate satellite2 = new Coordinate(4, 5, 6);
-            Coordinate satellite3 = new Coordinate(7, 8, 9);
-
-            // Triangulación de posición
-            Coordinate position = TriangulatePosition(satellite1, satellite2, satellite3);
-
-            Console.WriteLine($"La posición es: ({position.X}, {position.Y}, {position.Z})");
-        }
-        */
+    {
         public static CoordinateDto TriangulatePosition(CoordinateDto satellite1, CoordinateDto satellite2, CoordinateDto satellite3)
         {
             // Distancias entre los satélites y la posición desconocida
