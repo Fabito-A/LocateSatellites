@@ -17,18 +17,8 @@ namespace LocateSatellites.Controllers
             var response = calcsatellite.CalcSatellite(coordinate);
             return Ok(JsonConvert.SerializeObject(response));
         }
-
         [HttpPost]
-        [Route("/getDistance")]
-        public IActionResult GetDistance(List<CoordinateDataDto> coordinate)
-        {   
-            LogicaPrincipal logicaPrincipal = new LogicaPrincipal();
-            var response = logicaPrincipal.CalcDistance(coordinate);
-            return Ok(JsonConvert.SerializeObject(response));
-        }
-
-        [HttpPost]
-        [Route("/topsecret")]
+        [Route("/topsecret_split")]
         public IActionResult ProcesarArchivo(List<SatelliteDTO> satellites)
         {
             LogicaPrincipal logicaPrincipal = new LogicaPrincipal();
@@ -38,6 +28,14 @@ namespace LocateSatellites.Controllers
                 return Ok(JsonConvert.SerializeObject(response));
             else
                 return NotFound();
+        }
+
+        [HttpPost("{Satellite}")]
+        public IActionResult GetDistance(string Satellite,List<CoordinateDataDto> coordinate)
+        {
+            LogicaPrincipal logicaPrincipal = new LogicaPrincipal();
+            var response = logicaPrincipal.CalcDistance(Satellite,coordinate);
+            return Ok(JsonConvert.SerializeObject(response));
         }
     }
 }

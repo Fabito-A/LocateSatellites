@@ -104,26 +104,26 @@ namespace LocateSatellites.BusinesLogic
 
             if (position != null)
             {
-
+               
 
                 satellites.Add(new SatelliteDto
                 {
                     Name = "Kenobi",
-                    Distance = kenobiDistance,
+                    Distance = Math.Round(kenobiDistance, 2),
                     Message = kenobiMessage
                 });
 
                 satellites.Add(new SatelliteDto
                 {
                     Name = "Skywalker",
-                    Distance = skywalkerDistance,
+                    Distance = Math.Round(skywalkerDistance,2),
                     Message = skywalkerMessage
                 });
 
                 satellites.Add(new SatelliteDto
                 {
                     Name = "Sato",
-                    Distance = satoDistance,
+                    Distance = Math.Round(satoDistance,2),
                     Message = satoMessage
                 });
             }
@@ -131,7 +131,7 @@ namespace LocateSatellites.BusinesLogic
             return satellites;
         }
 
-        public List<SatelliteDto> CalcDistance(List<CoordinateDataDto> data)
+        public List<SatelliteDto> CalcDistance(string satelliteName,List<CoordinateDataDto> data)
         {
             CoordinateCtrlDto coord = new CoordinateCtrlDto();
 
@@ -147,6 +147,8 @@ namespace LocateSatellites.BusinesLogic
 
             LeerDatos leerTxt = new LeerDatos();
             List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
+            double satelliteDistance = 0.0;
+            List<string> MessageSatellite =new List<string>();
 
             if (coordinates.Count >= 1)
                 Kenobi = coordinates[0];
@@ -160,38 +162,32 @@ namespace LocateSatellites.BusinesLogic
             CoordinateDto kenobyReference = new CoordinateDto(Kenobi.Item1, Kenobi.Item2, Kenobi.Item3);
             CoordinateDto skywalwerReference = new CoordinateDto(Skywalker.Item1, Skywalker.Item2, Skywalker.Item3);
             CoordinateDto satoReference = new CoordinateDto(Sato.Item1, Sato.Item2, Sato.Item3);
-
-            // CoordinateDto pointReference = new CoordinateDto(x, y, z);
-            double kenobiDistance = SatelliteTriangulation.CalculateDistance(pointReference, kenobyReference);
-            double skywalkerDistance = SatelliteTriangulation.CalculateDistance(pointReference, skywalwerReference);
-            double satoDistance = SatelliteTriangulation.CalculateDistance(pointReference, satoReference);
-
             double triangulate = SatelliteTriangulation.CalculateDistance(pointReference, pointReference);
 
-            List<string> kenobiMessage = GetMessage(kenobiDistance, triangulate, "Kenobi");
-            List<string> skywalkerMessage = GetMessage(skywalkerDistance, triangulate, "Skywalker");
-            List<string> satoMessage = GetMessage(satoDistance, triangulate, "Sato");
-
-            satellites.Add(new SatelliteDto
+            if (satelliteName == "Kenobi")
             {
-                Name = "Kenobi",
-                Distance = Math.Round(kenobiDistance, 2),
-                Message = kenobiMessage
-            });
-
-            satellites.Add(new SatelliteDto
+                satelliteDistance = SatelliteTriangulation.CalculateDistance(pointReference, kenobyReference);
+                MessageSatellite = GetMessage(satelliteDistance, triangulate, "Kenobi");
+            }
+            else if (satelliteName == "Skywalker")
             {
-                Name = "Skywalker",
-                Distance = Math.Round(skywalkerDistance, 2),
-                Message = skywalkerMessage
-            });
-
-            satellites.Add(new SatelliteDto
+                satelliteDistance = SatelliteTriangulation.CalculateDistance(pointReference, skywalwerReference);
+                MessageSatellite = GetMessage(satelliteDistance, triangulate, "Skywalker");
+            }
+            else if
+            (satelliteName == "Sato")
             {
-                Name = "Sato",
-                Distance = Math.Round(satoDistance, 2),
-                Message = satoMessage
-            });
+                satelliteDistance = SatelliteTriangulation.CalculateDistance(pointReference, satoReference);
+                MessageSatellite = GetMessage(satelliteDistance, triangulate, "Sato");
+            }
+            else 
+            {
+                satelliteDistance = 0;
+                MessageSatellite.Add("Satellite no existe");
+
+            }
+
+            satellites.Add(new SatelliteDto { Name = satelliteName, Distance = Math.Round(satelliteDistance, 2), Message = MessageSatellite });
 
             return satellites;
         }
