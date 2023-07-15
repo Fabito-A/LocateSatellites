@@ -69,7 +69,7 @@ namespace LocateSatellites.BusinesLogic
 
             //cambiar el directorio 
             string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
-            leerDatos leerTxt = new leerDatos();    
+            LeerDatos leerTxt = new LeerDatos();    
             List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
 
             if (coordinates.Count >= 1)
@@ -145,7 +145,7 @@ namespace LocateSatellites.BusinesLogic
             //cambiar el directorio 
             string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
 
-            leerDatos leerTxt = new leerDatos();
+            LeerDatos leerTxt = new LeerDatos();
             List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
 
             if (coordinates.Count >= 1)

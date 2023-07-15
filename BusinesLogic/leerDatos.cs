@@ -1,13 +1,16 @@
-﻿namespace LocateSatellites.BusinesLogic
+﻿using System;
+using System.Globalization;
+
+namespace LocateSatellites.BusinesLogic
 {
-    public class leerDatos
+    public class LeerDatos
     {
         public List<Tuple<double, double, double>> ParseCoordinatesFromFile(string filePath)
         {
             List<Tuple<double, double, double>> coordinates = new List<Tuple<double, double, double>>();
-
-            coordinates.ToArray();
-
+            
+            var c = CultureInfo.InvariantCulture;
+            var style=NumberStyles.Float;
             try
             {
                 string[] lines = File.ReadAllLines(filePath);
@@ -17,33 +20,25 @@
                     if (line.Contains("="))
                     {
                         string[] parts = line.Split(new char[] { '=', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length >= 7)
+                        if (parts.Length >= 6)
                         {
                             double x, y, z;
 
-                            if (double.TryParse(parts[2], out x) && double.TryParse(parts[4], out y))
-                            {
-                                if (parts.Length >= 6)
-                                {
-                                    if (double.TryParse(parts[6], out z))
-                                    {
-                                        coordinates.Add(Tuple.Create(x, y, z));
-                                    }
-                                    else
-                                    {
-                                        z = 0.0;
-                                        Console.WriteLine("Error al convertir la coordenada Z en línea: " + line);
-                                    }
-                                }
-                                else
-                                {
-                                    z = 0.0;
-                                    coordinates.Add(Tuple.Create(x, y, z));
-                                }
+                            if (double.TryParse(parts[2],style,c, out x) && double.TryParse(parts[4],style,c, out y) && double.TryParse(parts[6],style,c, out z))
+                            {   
+
+                                var tuple = new Tuple<double, double, double>(x, y, z);
+
+                                coordinates.Add(tuple);
+
                             }
                             else
                             {
-                                Console.WriteLine("Error al convertir las coordenadas en línea: " + line);
+                                x = 0.0;
+                                y = 0.0;
+                                z = 0.0;
+                                //var tuple = new Tuple<double, double, double>(x, y, z);
+                                //coordinates.Add(tuple);
                             }
                         }
                     }
@@ -55,7 +50,7 @@
             }
 
             return coordinates;
-
         }
     }
+
 }
