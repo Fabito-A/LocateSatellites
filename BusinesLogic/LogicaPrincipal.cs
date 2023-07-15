@@ -229,7 +229,8 @@ namespace LocateSatellites.BusinesLogic
             }
             else
             {
-                return null;
+                List<string> msj = new List<string> { "No encontrado" };
+                return msj;
             }
         }
 
@@ -247,6 +248,7 @@ namespace LocateSatellites.BusinesLogic
             }
             else
             {
+
                 result = false;
             }
 
