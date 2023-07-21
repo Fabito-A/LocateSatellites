@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace LocateSatellites.BusinesLogic
 {
-    public class LeerDatos
+    public class ReadData
     {
         public List<Tuple<double, double, double>> ParseCoordinatesFromFile(string filePath)
         {

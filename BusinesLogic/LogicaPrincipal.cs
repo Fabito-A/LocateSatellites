@@ -56,7 +56,7 @@ namespace LocateSatellites.BusinesLogic
             return new List<string> { "not found" };
         }
 
-        public List<SatelliteDto> CalcSatellite(List<CoordinateDataDto> data)
+        public async Task<List<SatelliteDto>> CalcSatellite(List<CoordinateDataDto> data)
         {
             CoordinateCtrlDto coord = new CoordinateCtrlDto();
 
@@ -66,10 +66,11 @@ namespace LocateSatellites.BusinesLogic
                 coord.y = values.coordinate[0].y;
                 coord.z = values.coordinate[0].z;
             }
-
+            ///
+            ///
             //cambiar el directorio 
             string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
-            LeerDatos leerTxt = new LeerDatos();    
+            ReadData leerTxt = new ReadData();    
             List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
 
             if (coordinates.Count >= 1)
@@ -78,7 +79,11 @@ namespace LocateSatellites.BusinesLogic
                 Skywalker = coordinates[1];
             if (coordinates.Count >= 3)
                 Sato = coordinates[2];
-
+            ///
+            var clientWsockect = new WebsocketsConection();
+            CoordinateDataDto? dataWs =new CoordinateDataDto();
+            dataWs = await clientWsockect.ConecToserver();
+            //continuar el codigo 
             List<SatelliteDto> satellites = new List<SatelliteDto>();
             CoordinateDto pointReference = new CoordinateDto(coord.x, coord.y, coord.z);
             CoordinateDto kenobyReference = new CoordinateDto(Kenobi.Item1, Kenobi.Item2, Kenobi.Item3);
@@ -145,7 +150,7 @@ namespace LocateSatellites.BusinesLogic
             //cambiar el directorio 
             string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
 
-            LeerDatos leerTxt = new LeerDatos();
+            ReadData leerTxt = new ReadData();
             List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
             double satelliteDistance = 0.0;
             List<string> MessageSatellite =new List<string>();

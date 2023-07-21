@@ -11,10 +11,10 @@ namespace LocateSatellites.Controllers
     {
         [HttpPost]
         [Route("/sendCoord")]
-        public IActionResult GetCoordinate(List<CoordinateDataDto> coordinate)
+        public async IActionResult GetCoordinate(List<CoordinateDataDto> coordinate)
         {
             LogicaPrincipal calcsatellite =new LogicaPrincipal();  
-            var response = calcsatellite.CalcSatellite(coordinate);
+            var response =await calcsatellite.CalcSatellite(coordinate);
             return Ok(JsonConvert.SerializeObject(response));
         }
         [HttpPost]
