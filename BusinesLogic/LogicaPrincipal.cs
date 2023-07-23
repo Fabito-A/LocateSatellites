@@ -66,72 +66,83 @@ namespace LocateSatellites.BusinesLogic
                 coord.y = values.coordinate[0].y;
                 coord.z = values.coordinate[0].z;
             }
-            ///
-            ///
-            //cambiar el directorio 
-            string filePath = @"C:\Users\Fabio\Documents\PruebasDesarrollo\SatelliteLocation\LocateSatellites\Files\Satellites.txt";
-            ReadData leerTxt = new ReadData();    
-            List<Tuple<double, double, double>> coordinates = leerTxt.ParseCoordinatesFromFile(filePath);
+            //bool continueLogic;
+            List<SatelliteDto> satellites = new();
+            WebsocketsConection clientWsockect = new();
+            List<Tuple<double, double, double>>? dataWs = new();
 
-            if (coordinates.Count >= 1)
-                Kenobi = coordinates[0];
-            if (coordinates.Count >= 2)
-                Skywalker = coordinates[1];
-            if (coordinates.Count >= 3)
-                Sato = coordinates[2];
-            ///
-            var clientWsockect = new WebsocketsConection();
-            CoordinateDataDto? dataWs =new CoordinateDataDto();
+            // conectar al servidor websocket
             dataWs = await clientWsockect.ConecToserver();
-            //continuar el codigo 
-            List<SatelliteDto> satellites = new List<SatelliteDto>();
-            CoordinateDto pointReference = new CoordinateDto(coord.x, coord.y, coord.z);
-            CoordinateDto kenobyReference = new CoordinateDto(Kenobi.Item1, Kenobi.Item2, Kenobi.Item3);
-            CoordinateDto skywalwerReference = new CoordinateDto(Skywalker.Item1, Skywalker.Item2, Skywalker.Item3);
-            CoordinateDto satoReference = new CoordinateDto(Sato.Item1, Sato.Item2, Sato.Item3);
 
-            //trilateracion
-            CoordinateDto position = SatelliteTriangulation.TriangulatePosition(kenobyReference, skywalwerReference, satoReference);
-
-
-            double kenobiDistance =  SatelliteTriangulation.CalculateDistance(pointReference, kenobyReference);
-            double skywalkerDistance = SatelliteTriangulation.CalculateDistance(pointReference, skywalwerReference);
-            double satoDistance = SatelliteTriangulation.CalculateDistance(pointReference, satoReference);
-            double triangulate = SatelliteTriangulation.CalculateDistance(pointReference, position);
-
-            // Triangulación de posición
-
-            List<string> kenobiMessage = GetMessage(kenobiDistance, triangulate, "Kenobi");
-            List<string> skywalkerMessage = GetMessage(skywalkerDistance, triangulate, "Skywalker");
-            List<string> satoMessage = GetMessage(satoDistance, triangulate, "Sato");
-
-            //double[] coordinates = CoordinatesTransform.Trilateration(kenobiDistance, skywalkerDistance, satoDistance, Kenobi, Skywalker, Sato);
-
-            if (position != null)
+            if (dataWs.Count > 0) 
             {
-               
+                int cont = 0;
+                //continuar el codigo 
+                foreach (var item in dataWs) 
+                {
+                    cont++;
+                    Kenobi = cont == 1 ? item : new Tuple<double, double, double>(0.0, 0.0, 0.0);
+                    Skywalker = cont == 2 ? item : new Tuple<double, double, double>(0.0, 0.0, 0.0);
+                    Sato = cont == 3 ? item : new Tuple<double, double, double>(0.0, 0.0, 0.0);
+                }
+                CoordinateDto pointReference = new CoordinateDto(coord.x, coord.y, coord.z);
+                CoordinateDto kenobyReference = new CoordinateDto(Kenobi.Item1, Kenobi.Item2, Kenobi.Item3);
+                CoordinateDto skywalwerReference = new CoordinateDto(Skywalker.Item1, Skywalker.Item2, Skywalker.Item3);
+                CoordinateDto satoReference = new CoordinateDto(Sato.Item1, Sato.Item2, Sato.Item3);
 
+                //trilateracion
+                CoordinateDto position = SatelliteTriangulation.TriangulatePosition(kenobyReference, skywalwerReference, satoReference);
+
+
+                double kenobiDistance = SatelliteTriangulation.CalculateDistance(pointReference, kenobyReference);
+                double skywalkerDistance = SatelliteTriangulation.CalculateDistance(pointReference, skywalwerReference);
+                double satoDistance = SatelliteTriangulation.CalculateDistance(pointReference, satoReference);
+                double triangulate = SatelliteTriangulation.CalculateDistance(pointReference, position);
+
+                // Triangulación de posición
+
+                List<string> kenobiMessage = GetMessage(kenobiDistance, triangulate, "Kenobi");
+                List<string> skywalkerMessage = GetMessage(skywalkerDistance, triangulate, "Skywalker");
+                List<string> satoMessage = GetMessage(satoDistance, triangulate, "Sato");
+
+                //double[] coordinates = CoordinatesTransform.Trilateration(kenobiDistance, skywalkerDistance, satoDistance, Kenobi, Skywalker, Sato);
+
+                if (position != null)
+                {
+
+
+                    satellites.Add(new SatelliteDto
+                    {
+                        Name = "Kenobi",
+                        Distance = Math.Round(kenobiDistance, 2),
+                        Message = kenobiMessage
+                    });
+
+                    satellites.Add(new SatelliteDto
+                    {
+                        Name = "Skywalker",
+                        Distance = Math.Round(skywalkerDistance, 2),
+                        Message = skywalkerMessage
+                    });
+
+                    satellites.Add(new SatelliteDto
+                    {
+                        Name = "Sato",
+                        Distance = Math.Round(satoDistance, 2),
+                        Message = satoMessage
+                    });
+                }
+            }
+            else
+            {
                 satellites.Add(new SatelliteDto
                 {
-                    Name = "Kenobi",
-                    Distance = Math.Round(kenobiDistance, 2),
-                    Message = kenobiMessage
-                });
-
-                satellites.Add(new SatelliteDto
-                {
-                    Name = "Skywalker",
-                    Distance = Math.Round(skywalkerDistance,2),
-                    Message = skywalkerMessage
-                });
-
-                satellites.Add(new SatelliteDto
-                {
-                    Name = "Sato",
-                    Distance = Math.Round(satoDistance,2),
-                    Message = satoMessage
+                    Name = "ERROR",
+                    Distance = 0.0,
+                    Message = new List<string> { "Error Api comunication" }
                 });
             }
+            
 
             return satellites;
         }
@@ -255,5 +266,42 @@ namespace LocateSatellites.BusinesLogic
 
             return result;
         }
+        /*
+        bool FillTuplesCoordinate(List<Dictionary<string, double>>? dataWs) 
+        {
+            bool result = false;
+            int count = 0;
+
+            if (dataWs.Count > 0)
+            {
+                foreach (var coord in dataWs)
+                {
+                    count++;
+                    if (count == 1)
+                    {
+                        Kenobi = Tuple.Create(coord["x"], coord["y"], coord["z"]);
+                    }
+                    if (count == 2)
+                    {
+                        Skywalker = Tuple.Create(coord["x"], coord["y"], coord["z"]);
+                    }
+                    if (count == 3)
+                    {
+                        Sato = Tuple.Create(coord["x"], coord["y"], coord["z"]);
+                    }
+
+                }
+            }
+            else 
+            {
+                Kenobi = Tuple.Create(0.0, 0.0, 0.0);
+                Skywalker = Tuple.Create(0.0, 0.0, 0.0);
+                Sato = Tuple.Create(0.0, 0.0, 0.0);
+
+            }
+            return result;
+        }
+
+        */
     }
 }
