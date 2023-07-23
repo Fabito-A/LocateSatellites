@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text;
 using System.Numerics;
+using System.Threading;
 
 namespace LocateSatellites.BusinesLogic
 {
@@ -19,7 +20,7 @@ namespace LocateSatellites.BusinesLogic
             byte[] buf = new byte[1056];
             try
             {
-                if (ws.State == WebSocketState.Open)
+                while (ws.State == WebSocketState.Open)
                 {
                     var receive = await ws.ReceiveAsync(buf, CancellationToken.None);
 
@@ -34,8 +35,9 @@ namespace LocateSatellites.BusinesLogic
                         string? json = Encoding.UTF8.GetString(buf, 0, receive.Count);
                         var parseData = JsonSerializer.Deserialize<List<Dictionary<string, CoordinateCtrlDto>>>(json);
                         //List<Dictionary<string, Dictionary<string, double>>> parseData = (List<Dictionary<string, Dictionary<string, double>>>)cdata; 
-                        result = FillTuplesCoordinate(parseData);
-
+                        result = FillTuplesCoordinate(parseData);  
+                        await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "First data received", CancellationToken.None);
+                        break;
                     }
                 }
             }
@@ -43,7 +45,8 @@ namespace LocateSatellites.BusinesLogic
             {
                 Console.WriteLine("Excepcion websocket cli:", ex.ToString());
             }
-
+            //await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by server", CancellationToken.None);
+            ws.Dispose();
             return result;
 
         }
