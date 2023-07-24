@@ -1,5 +1,6 @@
 ﻿using LocateSatellites.Dtos;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 
 namespace LocateSatellites.BusinesLogic
@@ -10,9 +11,9 @@ namespace LocateSatellites.BusinesLogic
         Tuple<double, double, double> Skywalker = Tuple.Create(100.0, -100.0, 0.0);
         Tuple<double, double, double> Sato = Tuple.Create(500.0, 100.0, 0.0);
         */
-        Tuple<double, double, double> Kenobi;
-        Tuple<double, double, double> Skywalker;
-        Tuple<double, double, double> Sato;
+        private Tuple<double, double, double> Kenobi;
+        private Tuple<double, double, double> Skywalker;
+        private Tuple<double, double, double> Sato;
 
         public List<string> GetMessage(double distance, double triangulate, string name)
         {
@@ -40,6 +41,10 @@ namespace LocateSatellites.BusinesLogic
                 {
                     return new List<string> { "este", "es", "un", "", "secreto" };
                 }
+                else
+                {
+                    return new List<string> { "xxx", "xxxx", "Error", "xxxx", "xxx" };
+                }
             }
             else if (name == "Sato")
             {
@@ -50,6 +55,10 @@ namespace LocateSatellites.BusinesLogic
                 else if (distance <= 300 || distance <= 57.75)
                 {
                     return new List<string> { "este", "", "un", "", "secreto" };
+                }
+                else 
+                {
+                    return new List<string> { "xxx", "xxxx", "Error", "xxxx", "xxx" };
                 }
             }
 
@@ -81,9 +90,9 @@ namespace LocateSatellites.BusinesLogic
                 foreach (var item in dataWs) 
                 {
                     cont++;
-                    Kenobi = cont == 1 ? item : new Tuple<double, double, double>(0.0, 0.0, 0.0);
-                    Skywalker = cont == 2 ? item : new Tuple<double, double, double>(0.0, 0.0, 0.0);
-                    Sato = cont == 3 ? item : new Tuple<double, double, double>(0.0, 0.0, 0.0);
+                    if (cont == 1){Kenobi = item;}
+                    if (cont == 2){Skywalker = item;}
+                    if (cont == 3){Sato = item;}
                 }
                 CoordinateDto pointReference = new CoordinateDto(coord.x, coord.y, coord.z);
                 CoordinateDto kenobyReference = new CoordinateDto(Kenobi.Item1, Kenobi.Item2, Kenobi.Item3);
@@ -98,7 +107,7 @@ namespace LocateSatellites.BusinesLogic
                 double skywalkerDistance = SatelliteTriangulation.CalculateDistance(pointReference, skywalwerReference);
                 double satoDistance = SatelliteTriangulation.CalculateDistance(pointReference, satoReference);
                 double triangulate = SatelliteTriangulation.CalculateDistance(pointReference, position);
-
+                Console.WriteLine("TRIANGULACION x: {0:0.00}", position.X + "y:" + position.Y + "z:" + position.Z);
                 // Triangulación de posición
 
                 List<string> kenobiMessage = GetMessage(kenobiDistance, triangulate, "Kenobi");
@@ -114,21 +123,21 @@ namespace LocateSatellites.BusinesLogic
                     satellites.Add(new SatelliteDto
                     {
                         Name = "Kenobi",
-                        Distance = Math.Round(kenobiDistance, 2),
+                        Distance = Math.Round(kenobiDistance, 3),
                         Message = kenobiMessage
                     });
 
                     satellites.Add(new SatelliteDto
                     {
                         Name = "Skywalker",
-                        Distance = Math.Round(skywalkerDistance, 2),
+                        Distance = Math.Round(skywalkerDistance, 3),
                         Message = skywalkerMessage
                     });
 
                     satellites.Add(new SatelliteDto
                     {
                         Name = "Sato",
-                        Distance = Math.Round(satoDistance, 2),
+                        Distance = Math.Round(satoDistance, 3),
                         Message = satoMessage
                     });
                 }
@@ -216,21 +225,19 @@ namespace LocateSatellites.BusinesLogic
 
             foreach (var objeto in data)
             {
-
-                if (objeto.message is string)
+                //mensaje.AddRange(objeto.message.ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim()).Where(m => m != ""));
+                mensaje.AddRange(objeto.message.Where(m => m != ""));
+                foreach (var palabra in mensaje)
                 {
-                    if (objeto.message != null)
+                    if (!frase.Contains(palabra))
                     {
-                        mensaje.AddRange(objeto.message.ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim()).Where(m => m != ""));
+                        frase.Add(palabra);
                     }
+                   
                 }
-                else
-                {
-                    mensaje.AddRange(objeto.message.Where(m => m != ""));
-                }
-
-                frase.AddRange(mensaje.Where(m => m != ""));
                 mensaje.Clear();
+                
+     
             }
 
             if (decode.ToHashSet().SetEquals(frase.ToHashSet()))
@@ -248,8 +255,8 @@ namespace LocateSatellites.BusinesLogic
 
         bool MarginValue(double valor2)
         {
-            double margenMinimo = -50;
-            double margenMaximo = 50;
+            double margenMinimo = -100;
+            double margenMaximo = 100;
             bool result;
 
             double resultado = valor2;

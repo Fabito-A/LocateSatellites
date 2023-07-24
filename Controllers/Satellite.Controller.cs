@@ -19,10 +19,10 @@ namespace LocateSatellites.Controllers
         }
         [HttpPost]
         [Route("/topsecret_split")]
-        public IActionResult ProcesarArchivo(List<SatelliteDTO> satellites)
+        public IActionResult ProcesarArchivo(List<SatelliteDTO> data)
         {
             LogicaPrincipal logicaPrincipal = new LogicaPrincipal();
-            var response = logicaPrincipal.DecodeMessage(satellites);
+            var response = logicaPrincipal.DecodeMessage(data);
 
             if (response != null)
                 return Ok(JsonConvert.SerializeObject(response));
