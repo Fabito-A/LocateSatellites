@@ -6,11 +6,7 @@ using System.IO;
 namespace LocateSatellites.BusinesLogic
 {
     public class LogicaPrincipal
-    {/*
-        Tuple<double, double, double> Kenobi = Tuple.Create(-500.0, -200.0, 0.0);
-        Tuple<double, double, double> Skywalker = Tuple.Create(100.0, -100.0, 0.0);
-        Tuple<double, double, double> Sato = Tuple.Create(500.0, 100.0, 0.0);
-        */
+    {
         private Tuple<double, double, double> Kenobi;
         private Tuple<double, double, double> Skywalker;
         private Tuple<double, double, double> Sato;
@@ -225,7 +221,7 @@ namespace LocateSatellites.BusinesLogic
 
             foreach (var objeto in data)
             {
-                //mensaje.AddRange(objeto.message.ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim()).Where(m => m != ""));
+                
                 mensaje.AddRange(objeto.message.Where(m => m != ""));
                 foreach (var palabra in mensaje)
                 {
@@ -242,7 +238,7 @@ namespace LocateSatellites.BusinesLogic
 
             if (decode.ToHashSet().SetEquals(frase.ToHashSet()))
             {
-               // MessageOutput messageOutput = new MessageOutput();
+              
 
                 return decode.ToList();
             }
@@ -273,42 +269,6 @@ namespace LocateSatellites.BusinesLogic
 
             return result;
         }
-        /*
-        bool FillTuplesCoordinate(List<Dictionary<string, double>>? dataWs) 
-        {
-            bool result = false;
-            int count = 0;
-
-            if (dataWs.Count > 0)
-            {
-                foreach (var coord in dataWs)
-                {
-                    count++;
-                    if (count == 1)
-                    {
-                        Kenobi = Tuple.Create(coord["x"], coord["y"], coord["z"]);
-                    }
-                    if (count == 2)
-                    {
-                        Skywalker = Tuple.Create(coord["x"], coord["y"], coord["z"]);
-                    }
-                    if (count == 3)
-                    {
-                        Sato = Tuple.Create(coord["x"], coord["y"], coord["z"]);
-                    }
-
-                }
-            }
-            else 
-            {
-                Kenobi = Tuple.Create(0.0, 0.0, 0.0);
-                Skywalker = Tuple.Create(0.0, 0.0, 0.0);
-                Sato = Tuple.Create(0.0, 0.0, 0.0);
-
-            }
-            return result;
-        }
-
-        */
+       
     }
 }
